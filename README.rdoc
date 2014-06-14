@@ -1,6 +1,47 @@
 = hookable
 
-Description goes here.
+Create hook methods like Ruby's `included` and `extended`.
+
+  module Loggable
+    def self.included(base)
+      base.extend ClassMethods
+    end
+    
+    module ClassMethods
+      include Hookable
+      
+      def log(method_name)
+        alias_method "unlogged_#{method_name}", method_name
+        define_method method_name do |*args, &block|
+          puts "#{method_name} called with #{args}"
+          send "unlogged_#{method_name}", *args, &block
+        end
+        private "unlogged_#{method_name}"
+      end
+      
+      def logged(method_name, *args, &block)
+        puts "#{method_name} will now be logged."
+      end
+      
+      hook :log, :logged
+    end
+  end
+  
+As you would expect, classes that include the `Loggable` class can override the hooked `logged` method:
+
+  class Party
+    include Loggable
+    
+    def self.logged(method_name, *args, &block)
+      puts "It's a party! Log that #{method_name}!"
+    end
+    
+    def fun?
+      true
+    end
+    
+    log :fun?
+  end
 
 == Contributing to hookable
  
