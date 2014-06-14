@@ -8,7 +8,7 @@ Create hook methods like Ruby's `included` and `extended`.
     end
     
     module ClassMethods
-      include Hookable
+      include Hookable # Just mixin Hookable
       
       def log(method_name)
         alias_method "unlogged_#{method_name}", method_name
@@ -23,7 +23,7 @@ Create hook methods like Ruby's `included` and `extended`.
         puts "#{method_name} will now be logged."
       end
       
-      hook :log, :logged
+      hook :log, :logged # And hook your methods
     end
   end
   
